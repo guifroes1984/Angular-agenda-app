@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ContatoService } from '../contato.service';
 import { Contato } from './contato';
 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'
+import { FormBuilder, FormGroup, Validators, NgForm } from '@angular/forms'
 
 @Component({
   selector: 'app-contato',
@@ -13,7 +13,7 @@ export class ContatoComponent implements OnInit {
 
   formulario!: FormGroup;
   contatos: Contato[] = [];
-  colunas = ['id', 'nome', 'email', 'favorito']
+  colunas = ['foto', 'id', 'nome', 'email', 'favorito']
 
   constructor(
     private service: ContatoService, 
@@ -49,9 +49,21 @@ export class ContatoComponent implements OnInit {
     const formValues = this.formulario.value;
     const contato: Contato = new Contato(formValues.nome, formValues.email)
     this.service.save(contato).subscribe( resposta => {
-      this.contatos.push(resposta);
-      console.log(this.contatos)
+      let lista: Contato[] = [...this.contatos, resposta]
+      this.contatos = lista;
     })
+  }
+
+  uploadFoto($event: any, contato:any) {
+    const files = $event.target.files;
+    if(files){
+      const foto = files[0];
+      const formData: FormData = new FormData();
+      formData.append("foto", foto);
+      this.service
+            .upload(contato, formData)
+            .subscribe(response => this.listarContatos());
+    }
   }
 
 }
