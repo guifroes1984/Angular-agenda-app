@@ -14,10 +14,10 @@ export class ContatoService {
   url: string = environment.apiBaseUrl;
 
   constructor(
-    private https: HttpClient
+    private http: HttpClient
   ) { }
 
   save(contato: Contato) : Observable<Contato> {
-    return this.https.post<Contato>(this.url, contato);
+    return this.http.post<Contato>(this.url, contato);
   }
 }
