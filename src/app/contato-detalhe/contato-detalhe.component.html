@@ -1,13 +1,13 @@
-<mat-card style="text-align: center;">
-    <mat-card-header>
+<mat-card class="card">
+    <mat-card-header class="card-hea">
         <mat-card-title>
             <mat-icon>face</mat-icon>
             Contato
         </mat-card-title>
-        <img mat-card-image 
-            src="data:imagem/jpeg;base64,{{contato.foto}"
-        />
     </mat-card-header>
+    <img mat-card-image class="foto"
+         src="data:image/jpg;base64,{{ contato.foto }}"
+    />
     <mat-card-content>
         <p>
             <strong>{{ contato.nome }}</strong> <br />
@@ -15,7 +15,7 @@
         </p>
     </mat-card-content>
 
-    <mat-card-actions>
+    <mat-card-actions class="card-actions">
         <button mat-raised-button color="primary" (click)="fechar()">
             Fechar
         </button>
