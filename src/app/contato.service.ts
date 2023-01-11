@@ -37,4 +37,8 @@ export class ContatoService {
     return this.http.put(`${this.url}/${contato.id}/foto`, formData, { responseType : 'blob' });
   }
 
+  deletar(contato: Contato) : Observable<any> {
+    return this.http.delete<any>(`${this.url}/${contato.id}`);
+  }
+
 }

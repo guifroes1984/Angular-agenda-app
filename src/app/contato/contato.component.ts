@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ContatoService } from '../contato.service';
 import { Contato } from './contato';
 
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'
+import { FormBuilder, FormGroup, Validators, NgForm } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog'
 
 import { ContatoDetalheComponent } from '../contato-detalhe/contato-detalhe.component'
 import { PageEvent } from '@angular/material/paginator'
+import { MatSnackBar } from '@angular/material/snack-bar'
 
 @Component({
   selector: 'app-contato',
@@ -18,6 +19,9 @@ export class ContatoComponent implements OnInit {
   formulario!: FormGroup;
   contatos: Contato[] = [];
   colunas = ['foto', 'id', 'nome', 'email', 'favorito']
+  contatoSelecionado!: Contato;
+  mensagemSucesso!: string;
+  mensagemErro!: string;
 
   totalElementos = 0;
   pagina = 0;
@@ -27,7 +31,8 @@ export class ContatoComponent implements OnInit {
   constructor(
     private service: ContatoService, 
     private fb: FormBuilder,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -42,7 +47,7 @@ export class ContatoComponent implements OnInit {
       })
     }
 
-    listarContatos(pagina = 0, tamanho = 0) {
+    listarContatos(pagina = 0, tamanho = 4) {
       this.service.list(pagina, tamanho).subscribe( response => {
         this.contatos = response.content;
         this.totalElementos = response.totalElements;
@@ -61,8 +66,11 @@ export class ContatoComponent implements OnInit {
     const formValues = this.formulario.value;
     const contato: Contato = new Contato(formValues.nome, formValues.email)
     this.service.save(contato).subscribe( resposta => {
-      let lista: Contato[] = [...this.contatos, resposta]
-      this.contatos = lista;
+      this.listarContatos();
+      this.snackBar.open('O Contato foi adicionado!', 'Sucesso!', {
+        duration: 2000
+      })
+      this.formulario.reset();
     })
   }
 
@@ -89,6 +97,21 @@ export class ContatoComponent implements OnInit {
   paginar(event: PageEvent) {
     this.pagina = event.pageIndex;
     this.listarContatos(this.pagina, this.tamanho)
+  }
+
+  preparaDelecao(contato: Contato) {
+    this.contatoSelecionado = contato;
+  }
+
+  deletarContato() {
+    this.service
+      .deletar(this.contatoSelecionado)
+      .subscribe(respose =>{
+        this.mensagemSucesso = 'Contato deletado com sucesso!'
+        this.ngOnInit();
+      },
+      erro => this.mensagemErro = 'Ocorreu um erro ao deletar o contato.'
+      )
   }
 
 }
